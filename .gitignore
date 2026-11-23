@@ -212,3 +212,4 @@ temp/
 # Dados persistentes de containers
 .docker-data/
 docker-data/
+.neon

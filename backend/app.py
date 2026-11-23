@@ -13,11 +13,19 @@ from models import Usuario
 app = Flask(__name__)
 
 app.config["SECRET_KEY"] = os.getenv("FLASK_SECRET_KEY")
+if not app.config["SECRET_KEY"]:
+    raise RuntimeError("FLASK_SECRET_KEY não foi configurada.")
 
 CORS(app, origins=[
     "http://127.0.0.1:5500",
-    "http://localhost:5500"
+    "http://localhost:5500",
+    "https://recifehub.github.io"
 ], supports_credentials=True)
+app.config["SESSION_COOKIE_SECURE"] = os.getenv("FLASK_ENV") == "production"
+
+app.config["SESSION_COOKIE_SAMESITE"] = (
+    "None" if os.getenv("FLASK_ENV") == "production" else "Lax"
+)
 
 conectar_banco(app)
 
