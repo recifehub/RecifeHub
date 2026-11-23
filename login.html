@@ -225,7 +225,7 @@ async function entrar(event) {
     const senha = document.getElementById("senha").value;
 
     try {
-        const resposta = await fetch("http://127.0.0.1:5000/api/login", {
+        const resposta = await fetch("https://recifehub-jk11.onrender.com/api/login", {
             method: "POST",
 
             headers: {
