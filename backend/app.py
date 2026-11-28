@@ -69,15 +69,18 @@ def testar_usuarios():
 def cadastrar_usuario():
 
     dados = request.get_json()
+    if not isinstance(dados, dict):
+        return jsonify({"erro": "Envie os dados de cadastro em formato JSON."}), 400
 
     nome_completo = dados.get("nome_completo", "").strip()
     nome_usuario = dados.get("nome_usuario", "").strip()
     email = dados.get("email", "").strip().lower()
     senha = dados.get("senha", "")
     tipo_usuario = dados.get("tipo_usuario", "")
+    area_conhecimento = dados.get("area_conhecimento", "").strip()
 
     # Verifica se todos os campos foram preenchidos
-    if not all([nome_completo, nome_usuario, email, senha, tipo_usuario]):
+    if not all([nome_completo, nome_usuario, email, senha, tipo_usuario, area_conhecimento]):
         return jsonify({"erro": "Preencha todos os campos."}), 400
 
     if len(senha) < 6:
@@ -87,6 +90,22 @@ def cadastrar_usuario():
 
     if tipo_usuario not in tipos_validos:
         return jsonify({"erro": "Tipo de usuário inválido."}), 400
+
+    areas_validas = [
+        "Tecnologia e Inovação",
+        "Educação",
+        "Saúde",
+        "Meio Ambiente",
+        "Cultura e Artes",
+        "Desenvolvimento Social",
+        "Ciência e Pesquisa",
+        "Economia e Empreendedorismo",
+        "Mobilidade Urbana",
+        "Agricultura e Alimentação"
+    ]
+
+    if area_conhecimento not in areas_validas:
+        return jsonify({"erro": "Área de conhecimento inválida."}), 400
 
     # Verifica se o usuário ou email já existem
     existente = Usuario.query.filter(
@@ -107,7 +126,8 @@ def cadastrar_usuario():
         nome_usuario=nome_usuario,
         email=email,
         senha=senha_hash,
-        tipo_usuario=tipo_usuario
+        tipo_usuario=tipo_usuario,
+        area_conhecimento=area_conhecimento
     )
 
     try:

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detalhes do projeto - RecifeHub</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <a href="index.html" aria-label="Página inicial RecifeHub">
+      <img src="imagens/Logo RecifeHub.png" alt="RecifeHub" class="logo">
+    </a>
+    <nav class="nav">
+      <a href="index.html">Início</a>
+      <a href="fullprojetos.html">Projetos</a>
+      <a href="index.html">Sobre</a>
+      <a href="index.html">Ajuda</a>
+    </nav>
+    <div class="header-actions">
+      <div class="search-wrap">
+        <input class="search-mini" type="search" aria-label="Pesquisar">
+      </div>
+      <button class="btn btn-login" onclick="window.location.href='login.html'">Entrar</button>
+      <button class="btn btn-register" onclick="window.location.href='cadastro.html'">Cadastrar</button>
+    </div>
+  </header>
+
+  <section class="hero project-hero">
+    <div class="hero-content">
+      <h1>Conheça os detalhes<br><span>do projeto.</span></h1>
+      <p class="hero-description">
+        Descubra os objetivos, participantes e a comunidade por trás desta iniciativa.
+      </p>
+    </div>
+    <div class="hero-photo"></div>
+  </section>
+
+  <main class="project-detail-main">
+    <a class="project-back-link project-detail-back" href="fullprojetos.html">← Voltar para todos os projetos</a>
+    <article id="project-detail" class="project-detail-card" hidden>
+      <div class="project-detail-photo-wrap">
+        <img id="detail-photo" class="project-detail-photo" alt="">
+        <span id="detail-area" class="tag"></span>
+      </div>
+      <div class="project-detail-content">
+        <div class="project-detail-title-row">
+          <div>
+            <p class="project-detail-eyebrow">Projeto RecifeHub</p>
+            <h2 id="detail-name"></h2>
+          </div>
+          <span id="detail-status" class="project-status"></span>
+        </div>
+        <section class="project-detail-description">
+          <h3>Sobre o projeto</h3>
+          <p id="detail-description"></p>
+        </section>
+        <section class="project-specifications" aria-labelledby="specifications-title">
+          <h3 id="specifications-title">Especificações</h3>
+          <dl>
+            <div id="detail-participants-row">
+              <dt>Participantes</dt>
+              <dd id="detail-participants"></dd>
+            </div>
+            <div id="detail-organization-row">
+              <dt>Universidade ou empresa</dt>
+              <dd id="detail-organization"></dd>
+            </div>
+            <div id="detail-location-row">
+              <dt>Localização</dt>
+              <dd id="detail-location"></dd>
+            </div>
+            <div id="detail-area-row">
+              <dt>Área de conhecimento</dt>
+              <dd id="detail-area-value"></dd>
+            </div>
+          </dl>
+        </section>
+      </div>
+    </article>
+    <p id="project-detail-error" class="project-empty-state" role="status" hidden>
+      Não foi possível encontrar este projeto. Volte à lista e escolha outro projeto.
+    </p>
+  </main>
+
+  <footer>
+    <img src="imagens/Logo RecifeHub.png" alt="RecifeHub" class="footer-logo">
+    <div>Ideias que constroem o futuro do Recife</div>
+    <div class="footer-links">
+      <a href="#">Termos de Uso</a>
+      <a href="#">Contato</a>
+      <a href="#">Privacidade</a>
+    </div>
+  </footer>
+
+  <script>
+    const featuredProject = {
+      name: "Monitoramento da qualidade da água no Rio Capibaribe",
+      description: "Projeto de pesquisa que avalia os impactos da poluição na qualidade da água e propõe soluções sustentáveis para o rio.",
+      organization: "Universidade Federal de Pernambuco (UFPE)",
+      city: "Recife",
+      state: "PE",
+      participants: "",
+      category: "Pesquisa",
+      area: "Ciência e Pesquisa",
+      status: "Fase Inicial",
+      photo: ""
+    };
+
+    const projectDetail = document.getElementById("project-detail");
+    const errorMessage = document.getElementById("project-detail-error");
+    const projectId = new URLSearchParams(window.location.search).get("projeto");
+    let project;
+
+    try {
+      if (projectId === "featured") {
+        project = featuredProject;
+      } else if (projectId !== null && /^\d+$/.test(projectId)) {
+        const projects = JSON.parse(localStorage.getItem("recifehub-projetos") || "[]");
+        if (!Array.isArray(projects)) {
+          throw new TypeError("Os projetos salvos precisam estar em uma lista.");
+        }
+        project = projects[Number(projectId)];
+      }
+    } catch (error) {
+      console.error("Não foi possível carregar os dados do projeto.", error);
+    }
+
+    if (!project || typeof project !== "object") {
+      errorMessage.hidden = false;
+    } else {
+      const textValue = (value) => typeof value === "string" ? value.trim() : "";
+      const setDetail = (id, value, rowId) => {
+        const displayValue = textValue(value);
+        document.getElementById(id).textContent = displayValue || "Não informado";
+        if (rowId) {
+          document.getElementById(rowId).hidden = !displayValue;
+        }
+      };
+
+      document.title = `${textValue(project.name) || "Detalhes do projeto"} - RecifeHub`;
+      document.getElementById("detail-name").textContent = textValue(project.name) || "Projeto sem nome";
+      document.getElementById("detail-description").textContent =
+        textValue(project.description) || "Nenhuma descrição foi informada.";
+      document.getElementById("detail-area").textContent =
+        textValue(project.area || project.category) || "Projeto";
+      document.getElementById("detail-status").textContent =
+        textValue(project.status) || "Fase Inicial";
+      document.getElementById("detail-photo").alt =
+        `Imagem do projeto ${textValue(project.name)}`;
+
+      const photo = textValue(project.photo);
+      if (photo) {
+        document.getElementById("detail-photo").src = photo;
+      } else {
+        document.getElementById("detail-photo").hidden = true;
+        document.querySelector(".project-detail-photo-wrap").classList.add("project-detail-no-photo");
+      }
+
+      setDetail("detail-participants", project.participants, "detail-participants-row");
+      setDetail("detail-organization", project.organization, "detail-organization-row");
+      setDetail(
+        "detail-location",
+        [textValue(project.city), textValue(project.state)].filter(Boolean).join(" - "),
+        "detail-location-row"
+      );
+      setDetail("detail-area-value", project.area || project.category, "detail-area-row");
+      projectDetail.hidden = false;
+    }
+  </script>
+</body>
+</html>

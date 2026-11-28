@@ -31,6 +31,7 @@ class Usuario(db.Model):
     email = db.Column(db.String(150), nullable=False)
     senha = db.Column(db.String(255), nullable=False)
     tipo_usuario = db.Column(db.String(30))
+    area_conhecimento = db.Column(db.String(100), nullable=True)
 
     projetos = db.relationship("Projeto", back_populates="usuario")
 

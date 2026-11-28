@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Todos os projetos - RecifeHub</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <a href="index.html" aria-label="Página inicial RecifeHub">
+      <img src="imagens/Logo RecifeHub.png" alt="RecifeHub" class="logo">
+    </a>
+
+    <nav class="nav">
+      <a href="index.html">Início</a>
+      <a href="fullprojetos.html">Projetos</a>
+      <a href="index.html">Sobre</a>
+      <a href="index.html">Ajuda</a>
+    </nav>
+
+    <div class="header-actions">
+      <div class="search-wrap">
+        <input class="search-mini" type="search" aria-label="Pesquisar">
+      </div>
+      <button class="btn btn-login" onclick="window.location.href='login.html'">Entrar</button>
+      <button class="btn btn-register" onclick="window.location.href='cadastro.html'">Cadastrar</button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Ideias que conectam,<br><span>projetos que transformam.</span></h1>
+      <p class="hero-description">
+        Explore os projetos da comunidade RecifeHub e encontre iniciativas
+        para acompanhar, apoiar e fazer parte.
+      </p>
+      <div class="features">
+        <div class="feature">
+          <span class="feature-icon cap"></span>
+          <span>Pesquisas<br>acadêmicas</span>
+        </div>
+        <div class="feature">
+          <span class="feature-icon bulb"></span>
+          <span>Projetos<br>pessoais</span>
+        </div>
+        <div class="feature">
+          <span class="feature-icon bank"></span>
+          <span>Demandas de<br>Instituições</span>
+        </div>
+        <div class="feature">
+          <span class="feature-icon network"></span>
+          <span>Tudo em um<br>só lugar</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-photo"></div>
+  </section>
+
+  <main>
+    <div class="filters all-project-filters">
+      <label class="filter">
+        <span class="filter-icon">⌕</span>
+        <input id="project-search" type="search" aria-label="Buscar projetos"
+          placeholder="Buscar por projeto, descrição, participante...">
+      </label>
+      <select class="filter" id="city-filter" aria-label="Filtrar por cidade">
+        <option value="">Todas as cidades</option>
+      </select>
+      <select class="filter" id="state-filter" aria-label="Filtrar por estado">
+        <option value="">Todos os estados</option>
+      </select>
+      <select class="filter" id="area-filter" aria-label="Filtrar por área de conhecimento">
+        <option value="">Todas as áreas</option>
+      </select>
+      <select class="filter" id="status-filter" aria-label="Filtrar por status">
+        <option value="">Todos os status</option>
+        <option value="Fase Inicial">Fase Inicial</option>
+        <option value="Pronto">Pronto</option>
+      </select>
+      <button type="button" class="filter clear" id="clear-project-filters">Limpar filtros</button>
+    </div>
+
+    <div class="layout">
+      <section>
+        <div class="section-heading" id="projetos">
+          <h2>Todos os projetos</h2>
+          <a href="projeto.html" class="all-projects">Cadastrar projeto →</a>
+        </div>
+        <p id="project-count" class="project-count" aria-live="polite"></p>
+        <p id="project-load-error" class="project-empty-state" role="alert" hidden>
+          Não foi possível carregar os projetos salvos neste navegador.
+        </p>
+        <div id="all-project-cards" class="project-cards" aria-live="polite"></div>
+        <p id="project-empty-state" class="project-empty-state" hidden>
+          Nenhum projeto corresponde aos filtros selecionados.
+        </p>
+      </section>
+
+      <aside>
+        <div class="side-card">
+          <div class="side-card-top">
+            <span class="side-card-icon">♧</span>
+            <h3>Tem um projeto?</h3>
+          </div>
+          <p>
+            Envie sua proposta e conecte-se
+            com pessoas e instituições que podem
+            ajudar a torná-la realidade.
+          </p>
+          <a href="projeto.html" class="side-btn">Cadastrar projeto →</a>
+        </div>
+
+        <h2 class="categories-title">Categorias de projetos</h2>
+        <div class="category"><span class="cat-icon">⌂</span>Pesquisa<span class="count">245</span></div>
+        <div class="category"><span class="cat-icon">▤</span>Teses<span class="count">118</span></div>
+        <div class="category"><span class="cat-icon">▤</span>Dissertações<span class="count">67</span></div>
+        <div class="category"><span class="cat-icon">⚙</span>Protótipos<span class="count">95</span></div>
+        <div class="category"><span class="cat-icon">♧</span>Projetos de Extensão<span class="count">87</span></div>
+        <div class="category"><span class="cat-icon">•••</span>Outros<span class="count">43</span></div>
+
+        <div class="side-card city-card">
+          <span class="city-icon">♙</span>
+          <p>Juntos por uma cidade<br>mais inovadora e sustentável.</p>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer>
+    <img src="imagens/Logo RecifeHub.png" alt="RecifeHub" class="footer-logo">
+    <div>Ideias que constroem o futuro do Recife</div>
+    <div class="footer-links">
+      <a href="#">Termos de Uso</a>
+      <a href="#">Contato</a>
+      <a href="#">Privacidade</a>
+    </div>
+  </footer>
+
+  <script>
+    const projectCards = document.getElementById("all-project-cards");
+    const searchInput = document.getElementById("project-search");
+    const cityFilter = document.getElementById("city-filter");
+    const stateFilter = document.getElementById("state-filter");
+    const areaFilter = document.getElementById("area-filter");
+    const statusFilter = document.getElementById("status-filter");
+    const countLabel = document.getElementById("project-count");
+    const emptyState = document.getElementById("project-empty-state");
+    const loadError = document.getElementById("project-load-error");
+    const projects = [{
+      name: "Monitoramento da qualidade da água no Rio Capibaribe",
+      description: "Projeto de pesquisa que avalia os impactos da poluição na qualidade da água e propõe soluções sustentáveis para o rio.",
+      organization: "Universidade Federal de Pernambuco (UFPE)",
+      city: "Recife",
+      state: "PE",
+      participants: "",
+      category: "Pesquisa",
+      area: "Ciência e Pesquisa",
+      status: "Fase Inicial",
+      photo: ""
+    }];
+
+    let hasStorageError = false;
+    try {
+      const savedProjects = JSON.parse(localStorage.getItem("recifehub-projetos") || "[]");
+      if (!Array.isArray(savedProjects)) {
+        throw new TypeError("Os projetos salvos precisam estar em uma lista.");
+      }
+      savedProjects.forEach((project) => {
+        if (project && typeof project === "object") projects.push(project);
+      });
+    } catch (error) {
+      console.error("Não foi possível carregar os projetos salvos.", error);
+      hasStorageError = true;
+    }
+
+    const textValue = (value) => typeof value === "string" ? value : "";
+    const addOptions = (select, values) => {
+      [...new Set(values.map((value) => textValue(value).trim()).filter(Boolean))]
+        .sort((a, b) => a.localeCompare(b, "pt-BR"))
+        .forEach((value) => {
+          const option = document.createElement("option");
+          option.value = value.toLocaleLowerCase("pt-BR");
+          option.textContent = value;
+          select.append(option);
+        });
+    };
+
+    addOptions(cityFilter, projects.map((project) => project.city));
+    addOptions(stateFilter, projects.map((project) => project.state));
+    addOptions(areaFilter, [
+      "Tecnologia e Inovação",
+      "Educação",
+      "Saúde",
+      "Meio Ambiente",
+      "Cultura e Artes",
+      "Desenvolvimento Social",
+      "Ciência e Pesquisa",
+      "Economia e Empreendedorismo",
+      "Mobilidade Urbana",
+      "Agricultura e Alimentação",
+      "Outros",
+      ...projects.map((project) => project.area)
+    ]);
+
+    function renderProjects() {
+      const query = searchInput.value.trim().toLocaleLowerCase("pt-BR");
+      const city = cityFilter.value;
+      const state = stateFilter.value;
+      const area = areaFilter.value.toLocaleLowerCase("pt-BR");
+      const status = statusFilter.value;
+      const visibleProjects = projects.filter((project) => {
+        const searchableText = [
+          project.name,
+          project.description,
+          project.organization,
+          project.participants,
+          project.city,
+          project.state,
+          project.category,
+          project.area,
+          project.status
+        ].map(textValue).join(" ").toLocaleLowerCase("pt-BR");
+
+        return searchableText.includes(query)
+          && (!city || textValue(project.city).trim().toLocaleLowerCase("pt-BR") === city)
+          && (!state || textValue(project.state).trim().toLocaleLowerCase("pt-BR") === state)
+          && (!area || textValue(project.area || "Outros").trim().toLocaleLowerCase("pt-BR") === area)
+          && (!status || textValue(project.status || "Fase Inicial") === status);
+      });
+
+      projectCards.replaceChildren();
+      visibleProjects.forEach((project) => {
+        const card = document.createElement("article");
+        card.className = "project-card";
+
+        const image = document.createElement("div");
+        image.className = "project-image";
+        const photo = textValue(project.photo);
+        if (photo) {
+          const imageElement = document.createElement("img");
+          imageElement.src = photo;
+          imageElement.alt = `Imagem do projeto ${textValue(project.name)}`;
+          image.append(imageElement);
+        }
+
+        const tag = document.createElement("span");
+        tag.className = "tag";
+        tag.textContent = textValue(project.area || project.category) || "Projeto";
+        image.append(tag);
+
+        const body = document.createElement("div");
+        body.className = "project-body";
+        const title = document.createElement("h3");
+        title.textContent = textValue(project.name) || "Projeto sem nome";
+        body.append(title);
+
+        const description = document.createElement("p");
+        description.textContent = textValue(project.description);
+        body.append(description);
+
+        const details = document.createElement("div");
+        details.className = "project-info";
+        if (textValue(project.organization).trim()) {
+          const organization = document.createElement("div");
+          organization.textContent = project.organization;
+          details.append(organization);
+        }
+        if (textValue(project.city).trim() || textValue(project.state).trim()) {
+          const location = document.createElement("div");
+          location.textContent = `${textValue(project.city)}${project.city && project.state ? " - " : ""}${textValue(project.state)}`;
+          details.append(location);
+        }
+        if (textValue(project.participants).trim()) {
+          const participants = document.createElement("div");
+          participants.textContent = `Participantes: ${project.participants}`;
+          details.append(participants);
+        }
+        body.append(details);
+        card.append(image, body);
+        const projectIndex = projects.indexOf(project) - 1;
+        const detailsLink = document.createElement("a");
+        detailsLink.className = "project-card-link";
+        detailsLink.href = projectIndex < 0
+          ? "detalhesprojeto.html?projeto=featured"
+          : `detalhesprojeto.html?projeto=${projectIndex}`;
+        detailsLink.setAttribute("aria-label", `Ver detalhes do projeto ${textValue(project.name)}`);
+        card.append(detailsLink);
+        projectCards.append(card);
+      });
+
+      countLabel.textContent = `${visibleProjects.length} ${visibleProjects.length === 1 ? "projeto encontrado" : "projetos encontrados"}`;
+      emptyState.hidden = visibleProjects.length > 0;
+    }
+
+    searchInput.addEventListener("input", renderProjects);
+    cityFilter.addEventListener("change", renderProjects);
+    stateFilter.addEventListener("change", renderProjects);
+    areaFilter.addEventListener("change", renderProjects);
+    statusFilter.addEventListener("change", renderProjects);
+    document.getElementById("clear-project-filters").addEventListener("click", () => {
+      searchInput.value = "";
+      cityFilter.value = "";
+      stateFilter.value = "";
+      areaFilter.value = "";
+      statusFilter.value = "";
+      renderProjects();
+    });
+
+    renderProjects();
+    loadError.hidden = !hasStorageError;
+  </script>
+</body>
+</html>

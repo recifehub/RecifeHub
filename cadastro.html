@@ -263,6 +263,21 @@
           <option value="instituicao">Instituição</option>
         </select>
 
+        <label for="area_conhecimento">Área de conhecimento</label>
+        <select id="area_conhecimento" required>
+          <option value="">Selecione uma área</option>
+          <option value="Tecnologia e Inovação">Tecnologia e Inovação</option>
+          <option value="Educação">Educação</option>
+          <option value="Saúde">Saúde</option>
+          <option value="Meio Ambiente">Meio Ambiente</option>
+          <option value="Cultura e Artes">Cultura e Artes</option>
+          <option value="Desenvolvimento Social">Desenvolvimento Social</option>
+          <option value="Ciência e Pesquisa">Ciência e Pesquisa</option>
+          <option value="Economia e Empreendedorismo">Economia e Empreendedorismo</option>
+          <option value="Mobilidade Urbana">Mobilidade Urbana</option>
+          <option value="Agricultura e Alimentação">Agricultura e Alimentação</option>
+        </select>
+
         <label class="terms">
           <input type="checkbox" id="termos" required>
           <span>
@@ -296,6 +311,7 @@ async function cadastrar(event) {
     const senha = document.getElementById("senha").value;
     const confirmar = document.getElementById("confirmar").value;
     const tipo_usuario = document.getElementById("tipo").value;
+    const area_conhecimento = document.getElementById("area_conhecimento").value;
 
     // Verifica se as senhas são iguais
     if (senha !== confirmar) {
@@ -316,7 +332,8 @@ async function cadastrar(event) {
                 nome_usuario,
                 email,
                 senha,
-                tipo_usuario
+                tipo_usuario,
+                area_conhecimento
             })
         });
 
