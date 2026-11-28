@@ -182,6 +182,9 @@
     <section class="login">
       <h2>Entrar</h2>
       <p class="subtitle">Acesse sua conta do RecifeHub</p>
+      <p id="login-redirect-notice" class="subtitle" hidden>
+        Entre na sua conta para cadastrar um projeto.
+      </p>
 
       <form onsubmit="entrar(event)">
         <label for="email">E-mail</label>
@@ -218,6 +221,11 @@
   </div>
 
   <script>
+const redirectToProject = new URLSearchParams(window.location.search).get("redirect") === "projeto.html";
+if (redirectToProject) {
+    document.getElementById("login-redirect-notice").hidden = false;
+}
+
 async function entrar(event) {
     event.preventDefault();
 
@@ -248,6 +256,7 @@ async function entrar(event) {
         }
 
         alert("Bem-vindo, " + resultado.usuario.nome + "!");
+        window.location.href = redirectToProject ? "projeto.html" : "index.html";
 
     } catch (erro) {
         console.error("Erro:", erro);

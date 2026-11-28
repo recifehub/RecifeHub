@@ -46,7 +46,11 @@
         <p>Preencha as informações para apresentar seu projeto na página principal.</p>
       </div>
 
-      <form id="project-form">
+      <p id="project-access-message" class="project-access-message" role="status" aria-live="polite">
+        Verificando sua sessão...
+      </p>
+
+      <form id="project-form" hidden>
         <div class="form-field">
           <label for="project-name">Nome do projeto</label>
           <input id="project-name" name="name" type="text" maxlength="150" required
@@ -140,7 +144,60 @@
     const photoInput = document.getElementById("project-photo");
     const photoPreview = document.getElementById("photo-preview");
     const formMessage = document.getElementById("form-message");
+    const accessMessage = document.getElementById("project-access-message");
     const maxPhotoSize = 2 * 1024 * 1024;
+    const apiUrl = "https://recifehub-jk11.onrender.com";
+
+    function redirecionarParaLogin() {
+      window.location.href = "login.html?redirect=projeto.html";
+    }
+
+    function exibirErroDeAcesso(message) {
+      accessMessage.textContent = `${message} `;
+      const loginLink = document.createElement("a");
+      loginLink.href = "login.html?redirect=projeto.html";
+      loginLink.textContent = "Entrar";
+      accessMessage.append(loginLink, ".");
+      accessMessage.hidden = false;
+    }
+
+    async function verificarSessao() {
+      const response = await fetch(`${apiUrl}/api/sessao`, {
+        method: "GET",
+        credentials: "include"
+      });
+
+      if (response.status === 401) {
+        redirecionarParaLogin();
+        return false;
+      }
+
+      if (!response.ok) {
+        throw new Error(`Falha ao verificar a sessão (HTTP ${response.status}).`);
+      }
+
+      const session = await response.json();
+      if (!session.autenticado) {
+        redirecionarParaLogin();
+        return false;
+      }
+
+      return true;
+    }
+
+    verificarSessao()
+      .then((authenticated) => {
+        if (authenticated) {
+          projectForm.hidden = false;
+          accessMessage.hidden = true;
+        }
+      })
+      .catch((error) => {
+        console.error("Não foi possível confirmar a sessão do usuário.", error);
+        exibirErroDeAcesso(
+          "Não foi possível verificar seu acesso. Confira sua conexão. Você também pode"
+        );
+      });
 
     photoInput.addEventListener("change", () => {
       const photo = photoInput.files[0];
@@ -171,9 +228,21 @@
       reader.readAsDataURL(photo);
     });
 
-    projectForm.addEventListener("submit", (event) => {
+    projectForm.addEventListener("submit", async (event) => {
       event.preventDefault();
       formMessage.textContent = "";
+
+      try {
+        const authenticated = await verificarSessao();
+        if (!authenticated) return;
+      } catch (error) {
+        console.error("Não foi possível confirmar a sessão antes de publicar.", error);
+        projectForm.hidden = true;
+        exibirErroDeAcesso(
+          "Não foi possível confirmar seu acesso e o projeto não foi publicado. Conecte-se novamente:"
+        );
+        return;
+      }
 
       const photo = photoInput.files[0];
       if (!photo || photo.size > maxPhotoSize || !photo.type.startsWith("image/")) {
