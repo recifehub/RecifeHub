@@ -102,6 +102,28 @@
             placeholder="Separe os nomes por vírgula">
         </div>
 
+        <fieldset class="project-contact-fields">
+          <legend>Contato para contribuições</legend>
+          <p>Informe pelo menos uma opção. Os contatos serão exibidos publicamente na página do projeto.</p>
+          <div class="form-field">
+            <label for="project-contact-email">E-mail</label>
+            <input id="project-contact-email" name="contactEmail" type="email" maxlength="254"
+              placeholder="contato@exemplo.com">
+          </div>
+          <div class="form-field-row">
+            <div class="form-field">
+              <label for="project-contact-github">GitHub</label>
+              <input id="project-contact-github" name="contactGithub" type="url" maxlength="300"
+                placeholder="https://github.com/usuario">
+            </div>
+            <div class="form-field">
+              <label for="project-contact-linkedin">LinkedIn</label>
+              <input id="project-contact-linkedin" name="contactLinkedin" type="url" maxlength="300"
+                placeholder="https://www.linkedin.com/in/usuario">
+            </div>
+          </div>
+        </fieldset>
+
         <div class="form-field">
           <label for="project-organization">Universidade ou empresa <span>(opcional)</span></label>
           <input id="project-organization" name="organization" type="text" maxlength="150"
@@ -145,8 +167,15 @@
     const photoPreview = document.getElementById("photo-preview");
     const formMessage = document.getElementById("form-message");
     const accessMessage = document.getElementById("project-access-message");
+    const submitButton = projectForm.querySelector('button[type="submit"]');
     const maxPhotoSize = 2 * 1024 * 1024;
     const apiUrl = "https://recifehub-jk11.onrender.com";
+    let isSubmitting = false;
+
+    function finishSubmission() {
+      isSubmitting = false;
+      submitButton.disabled = false;
+    }
 
     function redirecionarParaLogin() {
       window.location.href = "login.html?redirect=projeto.html";
@@ -230,23 +259,41 @@
 
     projectForm.addEventListener("submit", async (event) => {
       event.preventDefault();
+      if (isSubmitting) return;
+      isSubmitting = true;
+      submitButton.disabled = true;
       formMessage.textContent = "";
+
+      const photo = photoInput.files[0];
+      if (!photo || photo.size > maxPhotoSize || !photo.type.startsWith("image/")) {
+        formMessage.textContent = "Escolha uma imagem válida de até 2 MB.";
+        finishSubmission();
+        return;
+      }
+
+      const contactEmail = document.getElementById("project-contact-email").value.trim();
+      const contactGithub = document.getElementById("project-contact-github").value.trim();
+      const contactLinkedin = document.getElementById("project-contact-linkedin").value.trim();
+      if (!contactEmail && !contactGithub && !contactLinkedin) {
+        formMessage.textContent = "Informe pelo menos um contato público: e-mail, GitHub ou LinkedIn.";
+        document.getElementById("project-contact-email").focus();
+        finishSubmission();
+        return;
+      }
 
       try {
         const authenticated = await verificarSessao();
-        if (!authenticated) return;
+        if (!authenticated) {
+          finishSubmission();
+          return;
+        }
       } catch (error) {
         console.error("Não foi possível confirmar a sessão antes de publicar.", error);
         projectForm.hidden = true;
         exibirErroDeAcesso(
           "Não foi possível confirmar seu acesso e o projeto não foi publicado. Conecte-se novamente:"
         );
-        return;
-      }
-
-      const photo = photoInput.files[0];
-      if (!photo || photo.size > maxPhotoSize || !photo.type.startsWith("image/")) {
-        formMessage.textContent = "Escolha uma imagem válida de até 2 MB.";
+        finishSubmission();
         return;
       }
 
@@ -258,6 +305,9 @@
           description: formData.get("description").trim(),
           area: formData.get("area"),
           status: formData.get("status"),
+          contactEmail,
+          contactGithub,
+          contactLinkedin,
           photo: reader.result,
           participants: formData.get("participants").trim(),
           organization: formData.get("organization").trim(),
@@ -273,10 +323,12 @@
         } catch (error) {
           console.error("Não foi possível salvar o projeto neste navegador.", error);
           formMessage.textContent = "Não foi possível salvar o projeto. Libere espaço no navegador e tente novamente.";
+          finishSubmission();
         }
       });
       reader.addEventListener("error", () => {
         formMessage.textContent = "Não foi possível ler a imagem. Tente outro arquivo.";
+        finishSubmission();
       });
       reader.readAsDataURL(photo);
     });

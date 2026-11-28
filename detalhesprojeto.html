@@ -76,6 +76,18 @@
             </div>
           </dl>
         </section>
+        <div class="project-detail-contribute">
+          <a id="contribute-button" class="project-submit-btn" href="#project-contacts">
+            Contribuir para o projeto →
+          </a>
+        </div>
+        <section id="project-contacts" class="project-contact-section" aria-labelledby="contact-title">
+          <h3 id="contact-title">Entre em contato com os envolvidos</h3>
+          <p id="contact-empty" class="project-contact-empty" hidden>
+            Este projeto ainda não informou contatos para contribuições.
+          </p>
+          <ul id="project-contact-list" class="project-contact-list"></ul>
+        </section>
       </div>
     </article>
     <p id="project-detail-error" class="project-empty-state" role="status" hidden>
@@ -165,6 +177,76 @@
         "detail-location-row"
       );
       setDetail("detail-area-value", project.area || project.category, "detail-area-row");
+
+      const contacts = [
+        {
+          label: "E-mail",
+          value: textValue(project.contactEmail),
+          href: (value) => `mailto:${value}`,
+          isValid: (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+        },
+        {
+          label: "GitHub",
+          value: textValue(project.contactGithub),
+          href: (value) => {
+            const url = new URL(value);
+            return ["github.com", "www.github.com"].includes(url.hostname.toLowerCase())
+              ? url.href
+              : "";
+          },
+          isValid: (value) => {
+            try {
+              return ["github.com", "www.github.com"].includes(new URL(value).hostname.toLowerCase());
+            } catch {
+              return false;
+            }
+          }
+        },
+        {
+          label: "LinkedIn",
+          value: textValue(project.contactLinkedin),
+          href: (value) => {
+            const url = new URL(value);
+            return ["linkedin.com", "www.linkedin.com"].includes(url.hostname.toLowerCase())
+              ? url.href
+              : "";
+          },
+          isValid: (value) => {
+            try {
+              return ["linkedin.com", "www.linkedin.com"].includes(new URL(value).hostname.toLowerCase());
+            } catch {
+              return false;
+            }
+          }
+        }
+      ];
+      const contactList = document.getElementById("project-contact-list");
+      contacts.forEach((contact) => {
+        if (!contact.value || !contact.isValid(contact.value)) return;
+        const item = document.createElement("li");
+        const link = document.createElement("a");
+        link.href = contact.href(contact.value);
+        link.textContent = contact.label === "E-mail" ? contact.value : contact.label;
+        if (contact.label !== "E-mail") {
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
+          const description = document.createElement("span");
+          description.textContent = contact.value;
+          item.append(link, description);
+        } else {
+          item.append(link);
+        }
+        contactList.append(item);
+      });
+
+      const hasContacts = contactList.childElementCount > 0;
+      document.getElementById("contact-empty").hidden = hasContacts;
+      document.getElementById("contribute-button").setAttribute(
+        "aria-label",
+        hasContacts
+          ? "Contribuir para o projeto e ver os contatos"
+          : "Ver informações de contato do projeto"
+      );
       projectDetail.hidden = false;
     }
   </script>
